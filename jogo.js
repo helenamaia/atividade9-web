@@ -3,14 +3,20 @@ let jogo;
 const elementos = {
     telaInicial: document.getElementById('inicial'),
     telaJogo: document.getElementById('jogo'),
+    telaCadastro : document.getElementById('cadastrar'),
     telaMensagem: document.querySelector('.mensagem'),
     textoMensagem: document.querySelector('.mensagem .texto'),
     teclado: document.querySelector('.teclado'),
     palavra: document.querySelector('.palavra'),
+    palavraCadastrada: document.getElementById('#palavraa'),
+    dicaCadastrada: document.querySelector('#dica'),
+    dificuldade: document.querySelector('#dificuldade-cadastro'),
     botoes:{
         facil: document.querySelector('.botao-facil'),
         medio: document.querySelector('.botao-medio'),
         dificil: document.querySelector('.botao-dificil'),
+        cadastrar: document.querySelector('.botao-cadastrar'),
+        submeter: document.querySelector('.botao-submeter'),
         reiniciar: document.querySelector('.reiniciar'),    
     },
     boneco: [
@@ -27,30 +33,51 @@ const elementos = {
 
 
 const palavras = {
-    facil: ['ardor','feito','noite','maior','vetor','ìmpar','anciã','avaro','salvo','pecha'],
-    medio: ['embuste', 'cônjuge', 'exceção', 'efêmero', 'prolixo', 'idílico', 'caráter', 'análogo', 'genuíno', 'estória'],
-    dificil: ['concepção','essencial','plenitude','hipócrita','corolário','paradigma','dicotomia','hegemonia','ratificar','propósito'],
+
+    facil: [
+        {valor: 'sonho', dica:'o que temos ao dormir'},
+        {valor:'casal', dica: 'duas pessoas juntas'},
+        {valor:'noite', dica: 'segunda parte do dia'},
+    ],
+    medio: [
+        {valor:'excesso', dica: 'algo por demais' },
+        {valor: 'cônjuge', dica: 'segunda pessoa na relação'},
+        {valor:'exceção', dica: 'algo que não é frequente'},
+    ],
+    dificil: [
+        {valor: 'concepção', dica: 'a ideia sobre algo'},
+        {valor: 'essencial', dica: 'algo que não pode faltar'},
+        {valor: 'plenitude', dica: 'capacidade de ter equilibrio'},
+    ],
 }
     
 const novoJogo = () => {
+
+    
+
     jogo = {
         dificuldade: undefined,
         palavra:{
             original: undefined,
             semAcentos: undefined,
             tamanho: undefined,
+            dica: undefined,
         },
         acertos: undefined,
         jogadas: [],
         chances: 6,
         definirPalavra: function (palavra) {
-            this.palavra.original = palavra;
-            this.palavra.tamanho = palavra.length;
+            this.palavra.original = palavra.valor;
+            this.palavra.tamanho = palavra.valor.length;
             this.acertos ='';
             this.palavra.semAcentos = this.palavra.original.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            for (let i = 0; i < palavra.length; i++) {
+            for (let i = 0; i < this.palavra.tamanho; i++) {
                 this.acertos += ' ';
             }
+            elementos.textoMensagem.innerHTML = `${palavra.dica}`;
+            elementos.telaMensagem.style.display = 'flex';
+            
+
 
         },
         jogar: function (letraJogada){
@@ -81,7 +108,8 @@ const novoJogo = () => {
 
     elementos.telaInicial.style.display = 'flex';
     elementos.telaJogo.style.display = 'none';
-    //elementos.telaMensagem.style.display = 'none'
+    elementos.telaMensagem.style.display = 'none';
+    elementos.telaCadastro.style.display = 'none';
     elementos.telaMensagem.classList.remove('mensagem-vitoria');
     elementos.telaMensagem.classList.remove('mensagem-derrota');
     for (const parte of elementos.boneco) {
@@ -158,6 +186,7 @@ const mostrarPalavra = () => {
 };
 
 const iniciarJogo = (dificuldade) => {
+   
     jogo.dificuldade = dificuldade;
     elementos.telaInicial.style.display = 'none';
     elementos.telaJogo.style.display = 'flex';
@@ -167,11 +196,42 @@ const iniciarJogo = (dificuldade) => {
     mostrarPalavra();
 };
 
+const cadastrarPalavra = () => {
+    elementos.telaInicial.style.display = 'none';
+    elementos.telaCadastro.style.display = 'flex';
+    elementos.textoMensagem.innerHTML = '<p>Voltar</p>';
+    elementos.telaMensagem.style.display = 'flex';
+
+    elementos.botoes.submeter.addEventListener('click', () => submeter());
+
+   
+}
+
+const submeter = () =>{
+    const val = document.querySelector('#palavraa');
+    const di = document.querySelector('#dica');
+    const aux = document.querySelector('#dificuldade-cadastro');
+    const selectedIndex = aux.selectedIndex;
+    const dificul = aux.options[selectedIndex].value;
+   
+    const p = {
+        valor: val.value,
+        dica: di.value,
+    }
+
+    palavras[dificul].push(p)
+
+    console.log(palavras);
+}
+
 const replace = (str, i, newChar) => str.substring(0, i) + newChar + str.substring(i + 1);
+
+
 
 elementos.botoes.facil.addEventListener('click', () => iniciarJogo('facil'));
 elementos.botoes.medio.addEventListener('click', () => iniciarJogo('medio'));
 elementos.botoes.dificil.addEventListener('click', () => iniciarJogo('dificil'));
+elementos.botoes.cadastrar.addEventListener('click', () => cadastrarPalavra());
 
 elementos.botoes.reiniciar.addEventListener('click', ()=> novoJogo());
 

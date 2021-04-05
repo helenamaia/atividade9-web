@@ -101,6 +101,35 @@ h1 {
 .area-util > * {
   flex: 1;
 }
+.plrv{
+  width: 200x;
+}
+#palavraa{
+  width: 100ex;
+  height: 30px;
+  border-radius: 10px ;
+  padding: 10px;
+  margin: 15px;
+}
+
+#dica{
+  width: 100ex;
+  height: 30px;
+  border-radius: 10px ;
+  padding: 10px;
+  margin: 15px;
+}
+
+#dificuldade-cadastro{
+  width: 300px;
+  height: 40px;
+  margin: 15px;
+  background-color: #ffffff;
+  font-size: 20px;
+  font-family: "Rye", cursive;
+  border-radius: 10px;
+  border-color:  #033242 ;
+}
 
 #inicial {
   display: flex;
@@ -172,7 +201,38 @@ button:hover {
   padding: 10px;
 }
 
+#cadastrar {
+  display: flex;
+  flex-direction: column;
+  display: none;
+  background-color: #f6f5f555;
+  margin: 20px;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.cadastro{
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin: 5px;
+  font-size: 40px;
+  width: 70px;
+  height: 70px;
+  padding: 10px;
+}
+
+
+
 .teclado {
+}
+
+#botao-submeter{
+  width: 250%;
+  font-size: 20px;
+  height: 50px;
+  margin: 15px;
+  
 }
 
 .teclado button {
