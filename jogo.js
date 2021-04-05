@@ -28,7 +28,7 @@ const elementos = {
 
 const palavras = {
     facil: ['ardor','feito','noite','maior','vetor','ìmpar','anciã','avaro','salvo','pecha'],
-    medio: ['âmago','mexer','êxito','termo','algoz','senso','nobre','plena','afeto','mútua'],
+    medio: ['embuste', 'cônjuge', 'exceção', 'efêmero', 'prolixo', 'idílico', 'caráter', 'análogo', 'genuíno', 'estória'],
     dificil: ['concepção','essencial','plenitude','hipócrita','corolário','paradigma','dicotomia','hegemonia','ratificar','propósito'],
 }
     
@@ -57,7 +57,7 @@ const novoJogo = () => {
             let acertou = false;
             for (let i = 0; i < this.palavra.tamanho; i++) {
                 const letra = this.palavra.semAcentos[i].toLowerCase();
-                if(letra == letraJogada.toLowerCase){
+                if(letra == letraJogada.toLowerCase()){
                     acertou = true;
                     this.acertos = replace(this.acertos, i, this.palavra.original[i]);
                 }
@@ -68,22 +68,94 @@ const novoJogo = () => {
 
             return acertou;
         },
-        ganhou: function (){},
-        perdeu: function (){},
+        ganhou: function (){
+            return !this.acertos.includes(' ');
+        },
+        perdeu: function (){
+            return this.chances <= 0;
+        },
+        acabou: function (){
+            return this.ganhou() || this.perdeu();
+        },
     };
 
     elementos.telaInicial.style.display = 'flex';
     elementos.telaJogo.style.display = 'none';
-    elementos.telaMensagem.style.display = 'none'
+    //elementos.telaMensagem.style.display = 'none'
     elementos.telaMensagem.classList.remove('mensagem-vitoria');
     elementos.telaMensagem.classList.remove('mensagem-derrota');
     for (const parte of elementos.boneco) {
         parte.classList.remove('escondido');
         parte.classList.add('escondido');
     }
+
+    criarTeclado();
 };
 
-novoJogo();
+const criarTeclado = () => {
+    const letras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    elementos.teclado.textContent = '';
+    for (const letra of letras) {
+        const button = document.createElement('button');
+        button.appendChild(document.createTextNode(letra.toUpperCase()));
+        button.classList.add(`botao-${letra}`);
+
+        elementos.teclado.appendChild(button);
+
+        button.addEventListener('click', () => {
+
+            if(!jogo.jogadas.includes(letra) && !jogo.acabou()){
+                const acertou = jogo.jogar(letra);
+                jogo.jogadas.push(letra);
+                button.classList.add(acertou ? 'certo' : 'errado');
+                mostrarPalavra();
+                
+                if(!acertou){
+                    mostrarErro();
+                }
+
+                if(jogo.ganhou()){
+                    mostrarMensagem(true);
+                } else if(jogo.perdeu()){
+                    mostrarMensagem(false);
+                }
+
+            }
+               
+        });
+    }
+};
+
+const mostrarErro = () => {
+    const parte = elementos.boneco[5 - jogo.chances];
+    parte.classList.remove('escondido');
+}
+
+const mostrarMensagem = vitoria => {
+    const mensagem = vitoria ? '<p>Parabéns</p><p>Você ganhou</p>' : '<p>Que pena</p><p>Você perdeu</p>';
+    elementos.textoMensagem.innerHTML = mensagem;
+    elementos.telaMensagem.style.display = 'flex';
+    elementos.telaMensagem.classList.add(`mensagem-${vitoria ? 'vitoria' : 'derrota'}`);
+}
+
+const sortearPalavra = () => {
+    const i = Math.floor(Math.random() * palavras[jogo.dificuldade].length) 
+    const palavra = palavras[jogo.dificuldade][i];
+    jogo.definirPalavra(palavra);
+
+    console.log(jogo.palavra.original);
+
+    return jogo.palavra.original;
+}
+
+const mostrarPalavra = () => {
+    elementos.palavra.textContent = '';
+    for (let i = 0; i < jogo.acertos.length; i++) {
+        const letra = jogo.acertos[i].toUpperCase();
+        elementos.palavra.innerHTML += `<div class="letra-${i}">${letra}</div>`;
+    }
+
+};
 
 const iniciarJogo = (dificuldade) => {
     jogo.dificuldade = dificuldade;
@@ -91,8 +163,8 @@ const iniciarJogo = (dificuldade) => {
     elementos.telaJogo.style.display = 'flex';
 
 
-    //sortear palavra
-    //mostrar palavra sorteada
+    sortearPalavra();
+    mostrarPalavra();
 };
 
 const replace = (str, i, newChar) => str.substring(0, i) + newChar + str.substring(i + 1);
